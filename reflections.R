@@ -1,27 +1,29 @@
-reflections <- function(x, iter) { #x is a matrix with people as rows and groups as columns iters is number of reflections
-   p.c <- matrix(c(rep(1, iter*nrow(x))), nrow = nrow(x)) #initialize person centralities
-   
-   g.c <- matrix(c(rep(1, iter*ncol(x))), nrow = ncol(x)) #initialize group centrality trajectory matrix
-   pc[, 1] <- rowSums(x) #person centrality
-   gc[, 1] <- colSums(x) #genre group centrality
+reflections <- function(x, iter = 20) { #x is a matrix with people as rows and groups as columns iters is number of reflections
+   p <- nrow(x)
+   g <- ncol(x)
+   p.c <- matrix(0, p, iter) #initialize person centralities
+   g.c <- matrix(0, g, iter) #initialize group centralities trajectory matrix
+   rownames(p.c) <- rownames(x)
+   rownames(g.c) <- colnames(x)
+   colnames(p.c) <- paste("r_", c(1:iter))
+   colnames(g.c) <- paste("r_", c(1:iter))
+   p.c[, 1] <- rowSums(x) #person degree centrality (expansiveness)
+   g.c[, 1] <- colSums(x) #group degree centrality (popularity)
+   #g.c[, 1] <- colMeans(x) #alternative approach to group centralities used in Lizardo (2018)
    k <- 1 #initializing counter
    while (k < iter) {
       m <- k + 1
-      for(i in 1:nrow(x)) {
-         pc.t <- x[i,] * gc[,k]
-         pc[i,m] <- mean(pc.t[pc.t > 0]) #assign person avg. genre centrality
-      }
+      for(i in 1:p) {
+         p.c[i, m] <- mean(x[i, ] * g.c[, k]) #assign person avg. centrality groups they belong to
+         } #end person loop
+      for(j in 1:g) {
+         g.c[j, m] <- mean(x[, j] * p.c[, k]) #assign genre avg. person centrality of people in group
+         } #end group loop
       k <- k + 1 #increase counter
-   }
-   for(i in 1:ncol(x)) {
-      gc.t <- x[,i] * pc[,k]
-      gc[i,m] <- mean(gc.t[gc.t > 0]) #assign genre avg. person centrality
-   }
-   
-   rownames(gc) <- colnames(x)
+      } #end while loop
    for (i in 1:iter) {
-      gc[,i] <- scale(gc[,i]) #rescale higher genre reflections
-      pc[,i] <- scale(pc[,i]) #rescale higher person reflections
-   }
-   return(list(person.reflections = p.c, genre.reflections = g.c))
-}
+      p.c[, i] <- scale(p.c[,i]) #rescale person reflections
+      g.c[, i] <- scale(g.c[,i]) #rescale group reflections
+      }
+   return(list(p.r = p.c, g.r = g.c))
+} #end function
