@@ -28,9 +28,9 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
    colnames(p.r) <- paste("Cr_", c(1:iter), sep = "")
    colnames(g.r) <- paste("Cr_", c(1:iter), sep = "")
    
-   p.c[, 1] <- rowSums(x) #person degree centrality (expansiveness)
-   g.c[, 1] <- colSums(x) #group degree centrality (popularity)
-   #g.c[, 1] <- colMeans(x) #alternative approach to group centralities used in Lizardo (2018)
+   p.c[, 1] <- rowSums(x) #person degree centrality 
+   g.c[, 1] <- colSums(x) #group degree centrality 
+   
    k <- 1 #initializing counter
    while (k < iter) {
       m <- k + 1
@@ -47,8 +47,8 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
       g.s[, j] <- scale(g.c[, j]) #rescaling group reflections
       }
    for (j in 1:iter) {
-      p.r[, j] <- rank(p.s[, j]) #rescaling person reflections
-      g.r[, j] <- rank(g.s[, j]) #rescaling group reflections
+      p.r[, j] <- rank(p.s[, j]) #ranking rescaled person reflections
+      g.r[, j] <- rank(g.s[, j]) #ranking rescaled group reflections
    }
    p.r <- (max(p.r) + 1) - p.r
    return(list(p.c = p.c, g.c = g.c, p.s = p.s, g.s = g.s, p.r = p.r, g.r = g.r))
