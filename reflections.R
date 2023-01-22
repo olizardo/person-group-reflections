@@ -50,6 +50,6 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
       p.r[, j] <- rank(p.s[, j]) #ranking rescaled person reflections
       g.r[, j] <- rank(g.s[, j]) #ranking rescaled group reflections
    }
-   p.r <- (max(p.r) + 1) - p.r
+   p.r <- (max(p.r) + 1) - p.r #reversing rank values so that smaller is highest
    return(list(p.c = p.c, g.c = g.c, p.s = p.s, g.s = g.s, p.r = p.r, g.r = g.r))
 } #end function
