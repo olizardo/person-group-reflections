@@ -3,10 +3,31 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
    g <- ncol(x)
    p.c <- matrix(0, p, iter) #initialize person centralities
    g.c <- matrix(0, g, iter) #initialize group centralities trajectory matrix
+   
+   p.s <- matrix(0, p, iter) #initialize person centralities
+   g.s <- matrix(0, g, iter) #initialize group centralities trajectory matrix
+
+   p.r <- matrix(0, p, iter) #initialize person centralities
+   g.r <- matrix(0, g, iter) #initialize group centralities trajectory matrix
+   
    rownames(p.c) <- rownames(x)
    rownames(g.c) <- colnames(x)
-   colnames(p.c) <- paste("r_", c(1:iter))
-   colnames(g.c) <- paste("r_", c(1:iter))
+   
+   rownames(p.s) <- rownames(x)
+   rownames(g.s) <- colnames(x)
+   
+   rownames(p.r) <- rownames(x)
+   rownames(g.r) <- colnames(x)
+   
+   colnames(p.c) <- paste("Cr", c(1:iter), sep = "")
+   colnames(g.c) <- paste("Cr_", c(1:iter), sep = "")
+   
+   colnames(p.s) <- paste("Cr_", c(1:iter), sep = "")
+   colnames(g.s) <- paste("Cr_", c(1:iter), sep = "")
+   
+   colnames(p.r) <- paste("Cr_", c(1:iter), sep = "")
+   colnames(g.r) <- paste("Cr_", c(1:iter), sep = "")
+   
    p.c[, 1] <- rowSums(x) #person degree centrality (expansiveness)
    g.c[, 1] <- colSums(x) #group degree centrality (popularity)
    #g.c[, 1] <- colMeans(x) #alternative approach to group centralities used in Lizardo (2018)
@@ -14,16 +35,21 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
    while (k < iter) {
       m <- k + 1
       for(i in 1:p) {
-         p.c[i, m] <- mean(x[i, ] * g.c[, k]) #assign person avg. centrality groups they belong to
+         p.c[i, m] <- sum(x[i, ] * g.c[, k]) * (1/p.c[i, 1]) #assign person avg. centrality groups they belong to
          } #end person loop
       for(j in 1:g) {
-         g.c[j, m] <- mean(x[, j] * p.c[, k]) #assign genre avg. person centrality of people in group
+         g.c[j, m] <- sum(x[, j] * p.c[, k]) * (1/g.c[j, 1]) #assign genre avg. person centrality of people in group
          } #end group loop
       k <- k + 1 #increase counter
       } #end while loop
-   for (i in 1:iter) {
-      p.c[, i] <- scale(p.c[,i]) #rescale person reflections
-      g.c[, i] <- scale(g.c[,i]) #rescale group reflections
+   for (j in 1:iter) {
+      p.s[, j] <- scale(p.c[, j]) #rescaling person reflections
+      g.s[, j] <- scale(g.c[, j]) #rescaling group reflections
       }
-   return(list(p.r = p.c, g.r = g.c))
+   for (j in 1:iter) {
+      p.r[, j] <- rank(p.s[, j]) #rescaling person reflections
+      g.r[, j] <- rank(g.s[, j]) #rescaling group reflections
+   }
+   p.r <- (max(p.r) + 1) - p.r
+   return(list(p.c = p.c, g.c = g.c, p.s = p.s, g.s = g.s, p.r = p.r, g.r = g.r))
 } #end function
