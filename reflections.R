@@ -6,7 +6,7 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
    
    p.s <- matrix(0, p, iter) #initialize person centralities
    g.s <- matrix(0, g, iter) #initialize group centralities trajectory matrix
-
+   
    p.r <- matrix(0, p, iter) #initialize person centralities
    g.r <- matrix(0, g, iter) #initialize group centralities trajectory matrix
    
@@ -36,16 +36,16 @@ reflections <- function(x, iter = 20) { #x is a matrix with people as rows and g
       m <- k + 1
       for(i in 1:p) {
          p.c[i, m] <- sum(x[i, ] * g.c[, k]) * (1/p.c[i, 1]) #assign person avg. centrality groups they belong to
-         } #end person loop
+      } #end person loop
       for(j in 1:g) {
          g.c[j, m] <- sum(x[, j] * p.c[, k]) * (1/g.c[j, 1]) #assign genre avg. person centrality of people in group
-         } #end group loop
+      } #end group loop
       k <- k + 1 #increase counter
-      } #end while loop
+   } #end while loop
    for (j in 1:iter) {
       p.s[, j] <- scale(p.c[, j]) #rescaling person reflections
       g.s[, j] <- scale(g.c[, j]) #rescaling group reflections
-      }
+   }
    for (j in 1:iter) {
       p.r[, j] <- rank(p.s[, j]) #ranking rescaled person reflections
       g.r[, j] <- rank(g.s[, j]) #ranking rescaled group reflections
