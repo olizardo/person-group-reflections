@@ -1,9 +1,7 @@
 reflections <- function(x, iter = 20) { #x is a matrix with people as rows and groups as columns iters is number of reflections
-    z <- t(x)
-    p <- nrow(x)
-    g <- ncol(x)
-    p.c <- matrix(0, p, iter) #initialize person reflections trajectory matrix
-    g.c <- matrix(0, g, iter) #initialize group reflections trajectory matrix
+    z <- t(x) #biadjacency matrix transpose
+    p.c <- matrix(0, nrow(x), iter) #initialize person reflections trajectory matrix
+    g.c <- matrix(0, ncol(x), iter) #initialize group reflections trajectory matrix
     rownames(p.c) <- rownames(x)
     rownames(g.c) <- colnames(x)
     colnames(p.c) <- paste("Ref_", c(1:iter), sep = "")
